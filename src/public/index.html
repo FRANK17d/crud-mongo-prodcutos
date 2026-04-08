@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Productos CRUD</title>
+    <meta
+      name="description"
+      content="Panel para crear, editar, listar y eliminar productos con Express.js y MongoDB Atlas."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Sans+3:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero-panel">
+        <div class="hero-copy">
+          <p class="eyebrow">API v1 + MongoDB Atlas</p>
+          <h1>Gestor de Productos <span>inventario CRUD en tiempo real</span></h1>
+          <p class="hero-text">
+            Administra tu coleccion con una vista mas clara, mejor adaptada a moviles y pensada para controlar precios en soles, stock y categorias sin friccion.
+          </p>
+          <div class="hero-tags" aria-label="Tecnologias usadas">
+            <span>CRUD completo</span>
+            <span>Express.js</span>
+            <span>Mongoose</span>
+            <span>HTML + CSS + Fetch API</span>
+          </div>
+        </div>
+
+        <aside class="hero-aside" aria-label="Resumen rapido">
+          <p class="stamp">PANEL CRUD</p>
+          <div class="info-card">
+            <span class="info-label">Version</span>
+            <strong>v1</strong>
+          </div>
+          <div class="info-card">
+            <span class="info-label">Coleccion</span>
+            <strong>productos</strong>
+          </div>
+          <div class="info-card">
+            <span class="info-label">Categorias</span>
+            <strong>3 predefinidas</strong>
+          </div>
+        </aside>
+      </section>
+
+      <section class="workspace-grid">
+        <section class="panel form-panel" aria-labelledby="form-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Formulario</p>
+            <h2 id="form-title">Crear o editar producto</h2>
+            <p class="panel-copy">Completa los datos principales del producto y guarda cambios desde un solo bloque de trabajo.</p>
+          </div>
+
+          <form id="product-form" class="product-form">
+            <div class="field-group field-group--full">
+              <label for="nombre">Nombre</label>
+              <input id="nombre" name="nombre" type="text" maxlength="120" placeholder="Ej: Laptop Gamer" required />
+            </div>
+
+            <div class="field-group field-group--full">
+              <label for="descripcion">Descripcion</label>
+              <textarea
+                id="descripcion"
+                name="descripcion"
+                rows="4"
+                maxlength="500"
+                placeholder="Describe el producto en al menos 10 caracteres"
+                required
+              ></textarea>
+            </div>
+
+            <div class="field-group">
+              <label for="precio">Precio</label>
+              <input id="precio" name="precio" type="number" min="0" step="0.01" placeholder="0.00 en soles" required />
+            </div>
+
+            <div class="field-group">
+              <label for="stock">Stock</label>
+              <input id="stock" name="stock" type="number" min="0" step="1" placeholder="0" required />
+            </div>
+
+            <div class="field-group field-group--full">
+              <label for="categoria">Categoria</label>
+              <select id="categoria" name="categoria" required>
+                <option value="">Selecciona una categoria</option>
+                <option value="Electrónica">Electrónica</option>
+                <option value="Ropa">Ropa</option>
+                <option value="Alimentos">Alimentos</option>
+              </select>
+            </div>
+
+            <div class="form-actions">
+              <button id="submit-button" type="submit" class="btn btn-primary">Guardar producto</button>
+              <button id="cancel-edit" type="button" class="btn btn-secondary" hidden>Cancelar edicion</button>
+            </div>
+          </form>
+
+          <p id="form-status" class="status-banner" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="panel table-panel" aria-labelledby="table-title">
+          <div class="panel-heading">
+            <p class="panel-kicker">Inventario</p>
+            <h2 id="table-title">Productos registrados</h2>
+            <p class="panel-copy">Busca, filtra y navega por paginas con una vista que se adapta mejor a tablets y pantallas pequenas.</p>
+          </div>
+
+          <div class="stats-grid" aria-label="Metricas de productos / Product metrics">
+            <article class="stat-card">
+              <span>Resultados</span>
+              <strong id="total-products">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Categorias visibles</span>
+              <strong id="active-categories">0</strong>
+            </article>
+            <article class="stat-card">
+              <span>Stock visible</span>
+              <strong id="total-stock">0</strong>
+            </article>
+          </div>
+
+          <section class="toolbar" aria-label="Busqueda y paginacion">
+            <form id="filters-form" class="filters-form">
+              <div class="filter-field filter-field--grow">
+                <label for="search-input">Buscar</label>
+                <input
+                  id="search-input"
+                  name="search"
+                  type="search"
+                  placeholder="Nombre, descripcion o categoria"
+                />
+              </div>
+
+              <div class="filter-field">
+                <label for="filter-category">Categoria</label>
+                <select id="filter-category" name="categoria">
+                  <option value="">Todas</option>
+                  <option value="Electrónica">Electrónica</option>
+                  <option value="Ropa">Ropa</option>
+                  <option value="Alimentos">Alimentos</option>
+                </select>
+              </div>
+
+              <div class="filter-field">
+                <label for="page-size">Por pagina</label>
+                <select id="page-size" name="limit">
+                  <option value="6">6</option>
+                  <option value="9">9</option>
+                  <option value="12">12</option>
+                </select>
+              </div>
+
+              <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                <button id="clear-filters" type="button" class="btn btn-secondary">Limpiar</button>
+              </div>
+            </form>
+
+            <div class="pagination-bar">
+              <p id="pagination-summary" class="pagination-summary">Pagina 1 de 1</p>
+              <div class="pagination-actions">
+                <button id="prev-page" type="button" class="btn btn-secondary">Anterior</button>
+                <button id="next-page" type="button" class="btn btn-secondary">Siguiente</button>
+              </div>
+            </div>
+          </section>
+
+          <div class="table-wrapper">
+            <table class="product-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Descripcion</th>
+                  <th>Categoria</th>
+                  <th>Precio</th>
+                  <th>Stock</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="product-table-body">
+                <tr>
+                  <td colspan="6" class="empty-row">Cargando productos...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+  </html>
